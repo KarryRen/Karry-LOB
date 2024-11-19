@@ -13,9 +13,13 @@ import os
 import datetime
 import numpy as np
 from multiprocessing import Pool
+from typing import List
 
-from TensorEngineering.tensor_engineering.util import gen_date_list, get_date_by_taskid, get_code_list
+from TensorEngineering.tensor_engineering.util import gen_date_list, get_code_list
 from Ops import CodeType
+from TensorEngineering.tensor_engineering.io import TensorEngineeringRootDir, get_file_path
+
+# The following 2 import is really important !
 from TensorEngineering.tensor_engineering.tensor_construction_algo import ConstructionAlgoBase
 import TensorEngineering.tensor_engineering.tensor_construction_algo as Algo
 
@@ -33,52 +37,54 @@ for x in dir(globals()["Algo"]):
         print(f"Going to construct the class: `{value}`")
 
 
-def date_to_fea(code_type, date, algo_class, mode):
+def tensor_construction_by_date(code_type: CodeType, date_list: List[str], algo_class, mode: str) -> None:
+    """ Construct the factor in the data_list of the code_type by algo_class in mode.
+
+    :param code_type: code type
+    :param date_list: list of dates
+    :param algo_class: algo class
+    :param mode: specific mode
+        - `a` is for adding, if exist will have no operations
+
     """
-    获取特定月份的数据，按特征分别保存为h5文件
-    """
-    func = algo_class(code_type=code_type)
-    code_list = get_code_list(code_type, date)
-    code_num = len(code_list)
-    print('code num:', code_num)
-    date_list = [date]
-    date_num = len(date_list)
-    print('date num:', date_num)
-    print('for loop start')
-    if os.environ.get('max_code_num'):
-        code_slice = int(os.environ.get('max_code_num'))
-        code_list = code_list[:code_slice]
-    out_ftype = func.out_coords.keys()
-    out_features = func.out_coords['F']
-    out_timestamps = func.out_coords['T']
-    version = func.__version__
-    file_name = func.__class__.__name__
-    # 创建文件夹
-    from TensorEngineering.tensor_engineering.io import TensorEngineeringRootDir, get_file_path
-    for date in date_list:
-        for code in code_list:
-            path = os.path.join(TensorEngineeringRootDir, f"{code}", date, )
+
+    # ---- Get the code & date list ---- #
+    code_list = get_code_list(code_type)
+    print(f"---- Going to operate `{len(code_list)}` codes")
+    print(f"---- Going to operate `{len(date_list)}` dates")
+
+    # ---- Build up the function & collect the algorithm detail ---- #
+    algo_func = algo_class(code_type=code_type)
+    out_ftype = algo_func.out_coords.keys()
+    out_features = algo_func.out_coords["F"]
+    out_timestamps = algo_func.out_coords["T"]
+    version = algo_func.__version__
+    file_name = algo_func.__class__.__name__
+
+    # ---- Make the directories ---- #
+    for code in code_list:
+        for date in date_list:
+            path = f"{TensorEngineeringRootDir}/{code}/{date}"
             os.makedirs(path, exist_ok=True)
-    # 判断特征是否已经存在
+
+    # ---- Judge whether feature is existed or not in mode `a` ---- #
     if mode == "a":
-        array_exists = []
+        feature_existed_list = []
         for date in date_list:
             for code in code_list:
                 file_path = get_file_path(code, date, file_name)
-                # 先验证文件是否存在
-                bool_exists = os.path.exists(file_path)
-                if bool_exists:
-                    # 验证生成时间是否满足版本
+                bool_existed = os.path.exists(file_path)  # path is existed or not
+                if bool_existed:
                     create_time = datetime.datetime.fromtimestamp(os.path.getctime(file_path))
-                    if create_time < datetime.datetime(*version):
-                        bool_exists = False
-                array_exists.append(bool_exists)
-        if np.all(np.array(array_exists)):
-            print('data exists. skip.', file_name)
+                    if create_time < datetime.datetime(*version):  # version is elder or not
+                        bool_existed = False
+                feature_existed_list.append(bool_existed)
+        if np.all(np.array(feature_existed_list)):
+            print(f"!! Feature `{file_name}` is existed. Skip !!")
             return
-    # 此处需要改成并行
+
+    # ---- Run the function ---- #
     n_process = int(os.environ.get('n_process', 32))
-    # n_process = 1
     if n_process <= 1:
         # debug用
         print(func)
@@ -124,7 +130,6 @@ def date_to_fea(code_type, date, algo_class, mode):
                 res0 = p.starmap(func, code_date)
         else:
             raise ValueError(func.out_ftype)
-    return
 
 
 if __name__ == "__main__":
@@ -133,17 +138,14 @@ if __name__ == "__main__":
     # ---- Generate date list ---- #
     start_date, end_date = os.environ.get("start_date"), os.environ.get("end_date")
     date_list = gen_date_list(start_date, end_date)
-    print(date_list)
 
-    # 根据以下两个变量，生成一个date_list
-    code_type = CodeType[os.environ.get('code_type')]
-    # 根据monthlist和taskid生成month
-    task_id = int(os.environ.get('task_id'))
-    mode = os.environ.get('mode')
-    date, algo_class_list = get_date_by_taskid(date_list, global_algo_class_list, task_id)  # taskid 仅在date维度拆分
-    # date, func_list = get_date_func_by_taskid(date_list, global_algo_class_list, task_id) # taskid 在date*fun维度拆分
-    print("month, func_list", date, algo_class_list)
+    # ---- Get the code type ---- #
+    code_type = CodeType[os.environ.get("code_type")]
 
-    # month传给mon_to_fea
-    for algo_class in algo_class_list:
-        date_to_fea(code_type, date, algo_class, mode)
+    # ---- Get the mode ---- #
+    mode = os.environ.get("mode")
+
+    # ---- Log the info and operate one by one ---- #
+    print(f"---- Operating `{len(date_list)}` trading dates, in `[{date_list[-1]}, {date_list[0]}]`")
+    for algo_class in global_algo_class_list:
+        tensor_construction_by_date(code_type, date_list, algo_class, mode)

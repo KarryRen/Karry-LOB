@@ -54,58 +54,17 @@ def gen_date_list(start: str, end: str) -> List[str]:
     return date_list
 
 
-def get_code_list(code_type: Union[str, CodeType], date: str):
-    # ensure code_type is CodeType
+def get_code_list(code_type: Union[str, CodeType]) -> List[Code]:
+    """ Get the code list based on code_type. """
+
+    # Ensure code_type is CodeType
     if isinstance(code_type, str):
         code_type = CodeType[code_type]
-    code_list = []
+
+    # Get the detailed code list, and transfer to Code
     if code_type == CodeType["FINANCIAL_FUTURE"]:
-        code_list = ["IH_M0", "IF_M0", "IC_M0", "IM_M0"]
-    elif code_type == CodeType["ETF"]:
-        etf_sh = [
-            "510050.SH",  # 华夏上证50ETF
-            "510300.SH",  # 华泰柏瑞沪深300ETF
-            "510500.SH",  # 南方中证500ETF
-            "588000.SH",  # 华夏上证科创板50成份ETF
-            "588080.SH",  # 易方达上证科创板50ETF
-        ]
-        etf_sz = [
-            "159901.SZ",  # 深证100
-            "159915.SZ",  # 创业板ETF
-            "159919.SZ",  # 沪深300ETF
-            "159922.SZ",  # 中证500ETF
-        ]
-        codes = etf_sh + etf_sz
+        code_list = ["IF_M0"]
     else:
-        pass
-    codes = [Code(x, code_type=code_type) for x in codes]
-    return codes
-
-
-def get_date_by_taskid(date_list, func_list, task_id):
-    """
-    根据date_list和task_id，返回当前任务需要处理的month
-    """
-    month_index = int(task_id)
-    if (month_index < len(date_list)):
-        pass
-    else:
-        print('not enough date_list', date_list, month_index)
-        print('exit')
-        sys.exit()
-    return date_list[month_index], func_list
-
-
-def get_date_func_by_taskid(date_list, func_list, task_id):
-    """
-    根据date_list, func_list和task_id，返回当前任务需要处理的month
-    """
-    month_index = int(round(int(task_id) // len(func_list)))
-    func_index = int(round(int(task_id) % len(func_list)))
-    if (month_index < len(date_list)):
-        pass
-    else:
-        print('not enough date_list', date_list, month_index, func_index)
-        print('exit')
-        sys.exit()
-    return date_list[month_index], func_list[func_index:func_index + 1]
+        raise TypeError(code_type)
+    code_list = [Code(x, code_type=code_type) for x in code_list]
+    return code_list

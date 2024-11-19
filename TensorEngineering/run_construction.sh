@@ -12,8 +12,7 @@ export PYTHONPATH=$(pwd):$PYTHONPATH
 # ---- Step 1. Set the basic os params for following use ---- #
 export start_date="20220101"
 export end_date="20231231"
-export mode="a"
-export freq="M"
+export mode="a" # different modes will have different operation
 export n_process=16
 
 # ---- Step 2. Prepare the tensor groups and code types to do the construction ---- #
@@ -37,6 +36,8 @@ do
         echo "** freq: '$freq'"
         echo "** n_process: '$n_process'"
         echo "***************************************"
+        echo "Top is the information from shell settings. ⬆ "
+        echo ""
         python3.8 TensorEngineering/main/construction.py
     done
 done
