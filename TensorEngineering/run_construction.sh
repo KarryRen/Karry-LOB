@@ -1,7 +1,13 @@
 #!/bin/bash
 
-# This is the entrance for Construction of Tensor Engineering.
-# Run this by `./run_construction.sh` directly
+# @author  : Karry Ren
+# @time    : 2024/03/15 10:25
+# @comment : This is the entrance for Construction of Tensor Engineering.
+#            Run this by `./run_construction.sh` directly
+
+# ---- Step 0. Some environment settings ---- #
+# shellcheck disable=SC2155
+export PYTHONPATH=$(pwd):$PYTHONPATH
 
 # ---- Step 1. Set the basic os params for following use ---- #
 export start_date="20220101"
@@ -11,7 +17,8 @@ export freq="M"
 export n_process=16
 
 # ---- Step 2. Prepare the tensor groups and code types to do the construction ---- #
-tensor_group_list=("$USER") # the list of tensor group
+#tensor_group_list=("$USER") # the list of tensor group
+tensor_group_list=("base") # the list of tensor group
 code_type_list=("FINANCIAL_FUTURE") # the list of code type
 
 # ---- Step 3. For loop the `tensor_group` and `code_type` to construct each factor ---- #
@@ -30,6 +37,6 @@ do
         echo "** freq: '$freq'"
         echo "** n_process: '$n_process'"
         echo "***************************************"
-        python3.8 ./main/construction.py
+        python3.8 TensorEngineering/main/construction.py
     done
 done
