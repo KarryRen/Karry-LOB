@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# @author : Karry Ren
-# @time   : 2024/02/28 10:25
+# @Author : Karry Ren
+# @Time   : 2024/02/28 10:25
 
 """ The interface of Base Tensor Construction Algorithm. """
 
@@ -8,4 +8,4 @@
 from .base_lob import LOB
 
 # ---- Label Algorithm ---- #
-from .base_label import HFTLabel
+# from .base_label import HFTLabel

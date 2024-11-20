@@ -91,7 +91,7 @@ def tensor_construction_by_date(code_type: CodeType, date_list: List[str], algo_
             for d, date in enumerate(date_list):
                 for c, code in enumerate(code_list):
                     print(f"- running ({d}, {c})|({len(date_list)}, {len(code_list)}) -- {algo_func}, {code}, {date}")
-                    res_fea_list.append(algo_func(code, date))
+                    res_fea_list.append(algo_func(code, date, save=False))
         else:
             raise ValueError(out_ftype)
         print(res_fea_list[0])

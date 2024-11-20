@@ -1,8 +1,8 @@
 #!/bin/bash
 
-# @author  : Karry Ren
-# @time    : 2024/03/15 10:25
-# @comment : This is the entrance for Construction of Tensor Engineering.
+# @Author  : Karry Ren
+# @Time    : 2024/03/15 10:25
+# @Comment : This is the entrance for Construction of Tensor Engineering.
 #            Run this by `./run_construction.sh` directly
 
 # ---- Step 0. Some environment settings ---- #
@@ -11,9 +11,9 @@ export PYTHONPATH=$(pwd):$PYTHONPATH
 
 # ---- Step 1. Set the basic os params for following use ---- #
 export start_date="20220101"
-export end_date="20231231"
+export end_date="20230101"
 export mode="a" # different modes will have different operation
-export n_process=16
+export n_process=2 # if == 1, for debug
 
 # ---- Step 2. Prepare the tensor groups and code types to do the construction ---- #
 #tensor_group_list=("$USER") # the list of tensor group
@@ -33,7 +33,6 @@ do
         echo "** start_date: '$start_date'"
         echo "** end_date: '$end_date'"
         echo "** mode: '$mode'"
-        echo "** freq: '$freq'"
         echo "** n_process: '$n_process'"
         echo "***************************************"
         echo "Top is the information from shell settings. ⬆ "

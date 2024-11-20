@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
-# @author : MaMing
-# @time   : 2024/02/28 11:25
-#
-# pylint: disable=no-member
+# @Author : Karry Ren
+# @Time   : 2024/11/20 10:25
 
-""" The LOB algorithm. """
+""" The `LOB` algorithm. """
 
 import numpy as np
 
@@ -16,8 +14,10 @@ class LOB(ConstructionAlgoBase):
     """ Get the Limit Order Book data. """
 
     def __init__(self, **kwargs):
+        """ Initialize the LOB. """
+
         # ---- Define the special params for LOB ---- #
-        version = (2024, 2, 22, 0, 0)  # use date to note version
+        version = (2024, 11, 20, 10, 34)  # use date&time to note version
         out_coords = {
             "T": list(range(28800)),
             "D": ["Bid", "Ask"],
@@ -32,17 +32,17 @@ class LOB(ConstructionAlgoBase):
     def cal_fea(self, code: Code, date: str):
         """ LOB calculation algorithm. """
 
-        # ---- Step 1. Get the market data of the `code` in `date` based on the data_source ---- #
+        # ---- Get the market data of the `code` in `date` based on the data_source ---- #
         # ds_array_well is the flag of reading data_source right or not
         # ds_xray_dict is the dict of each data_source type and xarray
         ds_array_well, ds_xray_dict = self.get_all_market_data(code, date)
 
         # ---- Step 2. Get the LOB based on the ds_xray ---- #
         if np.all(ds_array_well):  # all datasource array well
-            # Read the data
+            # read the data
             xray_lob = ds_xray_dict["LOB"]
-            # Set the LOB data
+            # set the LOB data
             self.xray.data[:] = xray_lob.data
-            # Make price be int
+            # make price be int (for the future factor using)
             self.xray.loc[:, :, :, "Price"] *= 100
         return self.xray
