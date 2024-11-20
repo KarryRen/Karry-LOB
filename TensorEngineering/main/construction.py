@@ -5,7 +5,10 @@
 """ The main function for construction.
 
 本函数用以生成基础特征.
-基础特征通常直接采用基础行情数据, 或者其他基础另类数据计算得到. 它的数据源来源是自由的, 通常的来源有: .csv, 另类数据等.
+基础特征通常直接采用基础行情数据, 或者其他基础另类数据计算得到.
+它的数据源来源是自由的, 通常的来源有: .csv, 另类数据等.
+
+请不要直接调用 python 运行本文件, 详情查看 README.md
 
 """
 
@@ -44,20 +47,17 @@ def tensor_construction_by_date(code_type: CodeType, date_list: List[str], algo_
     :param date_list: list of dates
     :param algo_class: algo class
     :param mode: specific mode
-        - `a` is for adding, if exist will have no operations
+        - `a` is for adding mode, there will be a detection for existed factors
 
     """
 
     # ---- Get the code & date list ---- #
     code_list = get_code_list(code_type)
-    print(f"---- Going to operate `{len(code_list)}` codes")
-    print(f"---- Going to operate `{len(date_list)}` dates")
+    print(f"-- Going to operate `{len(code_list)}` codes & `{len(date_list)}` dates")
 
     # ---- Build up the function & collect the algorithm detail ---- #
     algo_func = algo_class(code_type=code_type)
     out_ftype = algo_func.out_coords.keys()
-    out_features = algo_func.out_coords["F"]
-    out_timestamps = algo_func.out_coords["T"]
     version = algo_func.__version__
     file_name = algo_func.__class__.__name__
 
@@ -84,52 +84,24 @@ def tensor_construction_by_date(code_type: CodeType, date_list: List[str], algo_
             return
 
     # ---- Run the function ---- #
-    n_process = int(os.environ.get('n_process', 32))
-    if n_process <= 1:
-        # debug用
-        print(func)
-        res_list = []
-        if ['T'] == list(out_ftype)[:1]:
+    n_process = int(os.environ.get("n_process", 32))  # set the n_process
+    if n_process <= 1:  # `n_process <= 1` for debug, not save the feature
+        res_fea_list = []
+        if ["T"] == list(out_ftype)[:1]:  # out_ftype == ["T", "..."]
             for d, date in enumerate(date_list):
                 for c, code in enumerate(code_list):
-                    print('run (%d,%d)|(%d,%d)' % (d, c, len(date_list), len(code_list)), func, code, date)
-                    res_fea = func(code, date)
-                    res_list.append(res_fea)
-        elif ['C', 'T'] == list(out_ftype)[:2]:
-            for d, date in enumerate(date_list):
-                print('run (%d)|(%d)' % (d, len(date_list)), func, date)
-                res_fea = func(code_list, date)
-                res_list.append(res_fea)
-        elif ['D', 'T'] == list(out_ftype)[:2]:
-            for c, code in enumerate(code_list):
-                res_fea = func(code, date_list)
-                res_list.append(res_fea)
-                print('run (%d)|(%d)' % (c, len(code_list)), func, code, res_fea.shape)
-        elif ['C', 'D', 'T'] == list(out_ftype)[:3]:
-            res_fea = func(code_list, date_list)
-            res_list.append(res_fea)
+                    print(f"- running ({d}, {c})|({len(date_list)}, {len(code_list)}) -- {algo_func}, {code}, {date}")
+                    res_fea_list.append(algo_func(code, date))
         else:
             raise ValueError(out_ftype)
-        print(res_fea)
-        print('debug mode. not save feature')
-        # sys.exit()
+        print(res_fea_list[0])
     else:
         code_date = [(code, date) for code in code_list for date in date_list]
-        code_list_date = [(code_list, date) for date in date_list]
-        code_date_list = [(code, date_list) for code in code_list]
-        if ['C', 'D', 'T'] == list(out_ftype)[:3]:
-            res_list = [func(code_list, date_list)]
-        elif ['C', 'T'] == list(out_ftype)[:2]:
+        if ["T"] == list(out_ftype)[:1]:
             with Pool(n_process) as p:
-                res0 = p.starmap(func, code_list_date)
-        elif ['D', 'T'] == list(out_ftype)[:2]:
-            with Pool(n_process) as p:
-                res0 = p.starmap(func, code_date_list)
-        elif ['T'] == list(out_ftype)[:1]:
-            with Pool(n_process) as p:
-                res0 = p.starmap(func, code_date)
+                p.starmap(algo_func, code_date)
         else:
-            raise ValueError(func.out_ftype)
+            raise ValueError(out_ftype)
 
 
 if __name__ == "__main__":
@@ -148,4 +120,5 @@ if __name__ == "__main__":
     # ---- Log the info and operate one by one ---- #
     print(f"---- Operating `{len(date_list)}` trading dates, in `[{date_list[-1]}, {date_list[0]}]`")
     for algo_class in global_algo_class_list:
+        print(f"--- Using algorithm `{algo_class}`.")
         tensor_construction_by_date(code_type, date_list, algo_class, mode)
