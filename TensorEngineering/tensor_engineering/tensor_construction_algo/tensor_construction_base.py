@@ -192,7 +192,8 @@ class ConstructionAlgoBase:
         :param date: the date of feature
             Could be 1 date such as `yyyymmdd` or list of dates such as `[yyyymmdd1, yyyymmdd2, ...]`
         :param data_type: the data_type of needed data, you have the following 1 choice now:
-            - `LOB`: the Limit Order Book
+            - `LOB`: the Limit Order Book data
+            - `Trade`: the Trade data
 
         :return:
             - bool_get_well: the flag meaning market data is loaded right or not
@@ -208,8 +209,6 @@ class ConstructionAlgoBase:
             # test the code and date type
             assert isinstance(code, Code), f"Code: {code} is ERROR !"
             assert isinstance(date, (str, Date)), f"Date: {date} is ERROR !"
-            # define the flag meaning get well or not and the empty xray
-            bool_get_well, xray = False, None
             # read the market data as df
             bool_md, raw_md_df = get_md_as_df(code, date)
             if bool_md:  # md is existed
@@ -224,7 +223,7 @@ class ConstructionAlgoBase:
                     xray = xr.DataArray(
                         dims=["timestamp", "direction", "level", "feature"],
                         coords={
-                            "timestamp": range(0, 28800),
+                            "timestamp": range(28800),
                             "direction": directions,
                             "level": np.arange(1, levels + 1, 1),
                             "feature": features
@@ -238,6 +237,33 @@ class ConstructionAlgoBase:
             else:  # md is not existed
                 call_logger.error(f"ERROR: LOB MD data is NOT EXISTED !!! code:{code}, date: {date}, data_type: {data_type}")
                 raise Exception("LOB MD data is NOT EXISTED !!!")
+        elif data_type == "Trade":  # for `Trade` data
+            # test the code and date type
+            assert isinstance(code, Code), f"Code: {code} is ERROR !"
+            assert isinstance(date, (str, Date)), f"Date: {date} is ERROR !"
+            # read the market data as df
+            bool_md, raw_md_df = get_md_as_df(code, date)
+            if bool_md:  # md is existed
+                if valid_lob_df(raw_md_df):  # pass the validation
+                    bool_get_well = True
+                    # ge the trade_features list
+                    trade_features = kwargs.get("features", ["Status", "Volume", "Amount", "LastPrice"])
+                    # define the empty xray
+                    xray = xr.DataArray(
+                        dims=["timestamp", "feature"],
+                        coords={
+                            "timestamp": range(28800),
+                            "feature": trade_features,
+                        }
+                    )
+                    # set the data to the xray
+                    xray.data[:] = raw_md_df[trade_features].values.reshape(xray.shape)
+                else:  # not pass the validation
+                    call_logger.error(f"ERROR: TRADE Status ERROR !!! code: {code}, date: {date}, data_type: {data_type}")
+                    raise Exception(f"ERROR: TRADE Status ERROR !!!")
+            else:  # md is not existed
+                call_logger.error(f"ERROR: TRADE MD data is NOT EXISTED !!! code:{code}, date: {date}, data_type: {data_type}")
+                raise Exception("ERROR: TRADE MD data is NOT EXISTED !!!")
         else:
             raise ValueError(data_type)
         return bool_get_well, xray

@@ -6,14 +6,14 @@
 
 import numpy as np
 from Ops import Code
-from TensorEngineering.tensor_engineering.tensor_construction_algo.base import LOB
+from TensorEngineering.tensor_engineering.tensor_construction_algo.base import HFTLabel
 
 # ---- Define some `special` params for feature construction ---- #
 code = Code("IF_M0", code_type="FINANCIAL_FUTURE")
 date = "20220104"
 
 # ---- Define the CLASS of feature construction algorithm ---- #
-algo = LOB()
+algo = HFTLabel()
 
 # ---- Call the algorithm to compute feature ---- #
 xray = algo(code, date, save=False)

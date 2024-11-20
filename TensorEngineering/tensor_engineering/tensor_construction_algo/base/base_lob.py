@@ -11,7 +11,7 @@ from Ops import Code
 
 
 class LOB(ConstructionAlgoBase):
-    """ Get the Limit Order Book data. """
+    """ The Limit Order Book algorithm. """
 
     def __init__(self, **kwargs):
         """ Initialize the LOB. """
@@ -37,7 +37,7 @@ class LOB(ConstructionAlgoBase):
         # ds_xray_dict is the dict of each data_source type and xarray
         ds_array_well, ds_xray_dict = self.get_all_market_data(code, date)
 
-        # ---- Step 2. Get the LOB based on the ds_xray ---- #
+        # ---- Get the LOB based on the ds_xray ---- #
         if np.all(ds_array_well):  # all datasource array well
             # read the data
             xray_lob = ds_xray_dict["LOB"]

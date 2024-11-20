@@ -8,4 +8,4 @@
 from .base_lob import LOB
 
 # ---- Label Algorithm ---- #
-# from .base_label import HFTLabel
+from .base_hftlabel import HFTLabel
