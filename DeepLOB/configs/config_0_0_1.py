@@ -233,8 +233,7 @@ class Config:
         """ Dynamic init some params. """
 
         self.SAVE_PATH = (
-            f"/mnt/weka/home/test/maming_share/Experiments/{os.environ.get('USER')}"
-            f"/{self.job_name}/{self.FUTURE_TYPE}/model_date_{self.VALID_DATES[-1]}/rs_{self.SEED_STR}/"
+            f"save/{self.job_name}/{self.FUTURE_TYPE}/model_date_{self.VALID_DATES[-1]}/rs_{self.SEED_STR}/"
         )
         self.LOG_FILE = self.SAVE_PATH + "deeplob_log.log"
         self.MODEL_SAVE_PATH = self.SAVE_PATH + "trained_models/"

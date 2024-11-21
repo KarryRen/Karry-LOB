@@ -4,13 +4,11 @@
 
 """ Train and test deeplob based of the `config_version` and backup the package code. """
 
-import os
 import json
 
 from DeepLOB.task_util import environ_config  # during the import, all in `task_util.py` have been run.
 from DeepLOB.configs import load_config
-
-# from deeplob.main import run
+from DeepLOB.deeplob.main import run
 
 if __name__ == "__main__":
     # ---- Get the config_version from os environment ---- #
