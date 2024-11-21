@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
-# @author : Karry Ren
-# @time   : 2024/03/15 10:25
+# @Author : Karry Ren
+# @Time   : 2024/03/15 10:25
 
 """ The interface of Ops.
+
+This is a package for unifed management for datatype and other operating things.
 
 Please avoid using from ... import *, which is easy but dangerous.
 

@@ -1,15 +1,13 @@
 # -*- coding: utf-8 -*-
-# @author : Karry Ren
-# @time   : 2024/04/11 11:25
-#
-# pylint: disable=no-member
+# @Author : Karry Ren
+# @Time   : 2024/04/11 11:25
 
 """ Some util functions. """
 
 import h5py
 import os
 import datetime
-from typing import Callable, Dict, List, Union
+from typing import Callable, List, Union
 import numpy as np
 from .datatype import Code, CodeType, Exchange, Date
 
@@ -75,7 +73,8 @@ def get_dates(
     return dates
 
 
-def get_codes(date: datetime, code_type: Union[str, CodeType] = None, exchange: Exchange = "UNKNOWN", filter: Union[str, Callable] = None) -> List[Code]:
+def get_codes(date: datetime, code_type: Union[str, CodeType] = None, exchange: Exchange = "UNKNOWN", filter: Union[str, Callable] = None) -> List[
+    Code]:
     """
     date: 
     code_type: 

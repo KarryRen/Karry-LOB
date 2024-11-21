@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
-# @author : Karry Ren
-# @time   : 2024/03/15 11:25
-#
-# pylint: disable=no-member
+# @Author : Karry Ren
+# @Time   : 2024/03/15 11:25
 
 """ The datatype Class.
 
@@ -168,7 +166,7 @@ class Code:
 
     def __eq__(self, others):
         return (self.code == others.code) and (self.symbol == others.symbol) and (
-            self.exchange == others.exchange) and (self.__info == others.__info)
+                self.exchange == others.exchange) and (self.__info == others.__info)
 
     def __gt__(self, other):
         return self.code > other.code
