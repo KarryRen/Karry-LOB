@@ -5,22 +5,22 @@
 # @Comment : This is the entrance for Construction of Tensor Engineering.
 #            Run this by `./run_construction.sh` directly
 
-# ---- Step 0. Some environment settings ---- #
+# ---- Some environment settings ---- #
 # shellcheck disable=SC2155
 export PYTHONPATH=$(pwd):$PYTHONPATH
 
-# ---- Step 1. Set the basic os params for following use ---- #
+# ---- Set the basic os params for following use ---- #
 export start_date="20220101"
 export end_date="20230101"
 export mode="a" # different modes will have different operation
 export n_process=1 # if == 1, for debug
 
-# ---- Step 2. Prepare the tensor groups and code types to do the construction ---- #
+# ---- Prepare the tensor groups and code types to do the construction ---- #
 #tensor_group_list=("$USER") # the list of tensor group
 tensor_group_list=("base") # the list of tensor group
 code_type_list=("FINANCIAL_FUTURE") # the list of code type
 
-# ---- Step 3. For loop the `tensor_group` and `code_type` to construct each factor ---- #
+# ---- For loop the `tensor_group` and `code_type` to construct each factor ---- #
 for tensor_group_item in "${tensor_group_list[@]}"
 do
     for code_type_item in "${code_type_list[@]}"

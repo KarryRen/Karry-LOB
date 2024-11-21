@@ -31,18 +31,24 @@ Karry-LOB/
         └── construction.py # The main function for construction.
     └── test # Test function for tensor engineering.
         └── test_construction.py # The test function for construction.
+├── DeepLOB # The package for modeling the LOB fatcors.
+    ├── source # The shell source files.
+        ├── run_deeplob.sh # Entrance for running deeplob.
+        └── train_test_deeplob.sh
 └── 
 ```
 
 ## 1. Tensor Engineering
 
-> **因子挖掘模块，系统化的流程使用 LOB 数据计算、构建和存储因子数据（Construction），后续可能会在 Construction 的基础上进一步进行因子信息提取（Extraction）**。这个部分之所以叫做 Tensor Engineering，是因为后续的所有建模流程都是基于深度学习的，Input 都是 Tensor，因此就将构造和处理 Input 的过程称为 Tensor Engineering。
+**因子挖掘模块，系统化使用原始的 LOB 交易数据计算、构建和存储因子数据（Construction），后续可能会在 Construction 的基础上进一步进行因子信息提取（Extraction），也即对基础因子值进行更多有意义的变换**。
+
+这个部分之所以叫做 Tensor Engineering，是因为后续的所有建模流程都是基于深度学习的，Input 都是 Tensor，因此就将构造和处理 Input 的过程称为 Tensor Engineering。
 
 ### 1.1 Code Idea
 
-> 编码思路。将编码思路清晰地列出来更有助于理解，同时对其中的一些依赖也做详细的说明。
+> 将编码思路清晰地列出来更有助于理解，同时对其中的一些依赖也做详细的说明。
 >
-> **【Dependency】**注意此部分所用到的以来：
+> **【Dependency】**注意此部分所用到的核心依赖有：
 >
 > - 模块高度依赖 [**xarray**](https://docs.xarray.dev/en/stable/index.html) 工具包，该工具包是基于 numpy 开发的高维数据构造包，构造出来的数据也有极高的可读性和可操作性。但是该包有比较明显的缺点，就是在 Windows 系统上极难安装，需要一定的耐心。因为搭建包时使用的是 Linux 系统，所以没有遇到包安装问题。
 > - 所涉及的金融数据部分大都依赖 [**akshare**](https://akshare.akfamily.xyz/index.html) 工具包，该工具包以爬虫为基础，收集了众多金融数据供开源使用。比如获取交易日期等功能。
@@ -125,4 +131,13 @@ out_coords = {
 }  # the out coords
 ```
 
-Label 的计算存在一定的细节，尤其是 Label Weight 的获取。在后续的建模中会省略掉一些无效的 tick 点，主要是通过 Label 的 Weight 来控制的，在生成的时候主要是考虑了交易状态。
+Label 的计算存在一定的细节，尤其是 Label Weight 的获取。在后续的建模中会省略掉一些无效的 tick 点，主要是通过 Label 的 Weight 来控制，在生成的时候主要考虑了交易状态。
+
+## 2. DeepLOB
+
+**数据建模模块，基于上述生成的因子，开始进行建模**。
+
+### 2.1 Code Idea
+
+此部分的编码思路较为直接，完全采用标准的 pytorch 框架进行搭建。仍然是采用 `shell` 脚本作为程序入口，使用 `.py` 文件进行串联。首先从 `shell` 脚本出发，通过 `task_id` 来控制 Train，Valid 以及 Test 的日期区间，以及一些诸如随机种子的配置。
+
