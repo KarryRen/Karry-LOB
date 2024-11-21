@@ -1,5 +1,7 @@
 # Karry-LOB
-The advanced deeplob model for QR. 不仅涵盖 LOB 的模型部分，还包括使用 LOB 进行因子挖掘和建模的全套流程。
+The advanced deeplob model for QR. 
+
+本项目不仅涵盖 LOB 的模型部分，还包括使用 LOB 进行因子挖掘和建模的全套流程。
 
 ⚠️ 所有的代码均需要在根目录 `Karrt-LOB/` 运行 ！
 
@@ -7,17 +9,28 @@ The advanced deeplob model for QR. 不仅涵盖 LOB 的模型部分，还包括�
 Karry-LOB/
 ├── Images # The images.
     ├── images.pptx # Images constructing PPT.
+├── Ops # The operating code for unified managing.
+    ├── __init__.py # The interface.
+    ├── datatype.py # Datatype management.
+    └── util.py # Util functions.
 ├── TensorEngineering # The package for building up factors.
     ├── tensor_engineering
         ├── tensor_construction_algo # The algorithms for tensor construction.
+            ├── __init__.py # The interface of tensor construction algorithms.
+            ├── tensor_construction_base.py # The base class of tensor construction.
             ├── base # The base algorithms
+                ├── __init__.py # The interface of base algorithms.
+                ├── base_hftlabel.py # HFTLabel algorithms.
+                └── base_lob.py # LOB algorithms.
+            └── ... # Other algorithms for tensor construction.
+        ├── io.py # IO functions.
+        └── util.py # Util functions.
     ├── run_construction.sh # The entrance for construction.
+    ├── run_test_construction.sh # The entrance for test construction.
     ├── main # Main function for tensor engineering.
         └── construction.py # The main function for construction.
-    ├── test # Test function for tensor engineering.
+    └── test # Test function for tensor engineering.
         └── test_construction.py # The test function for construction.
-├── Ops # The operating code for easy managing.
-    
 └── 
 ```
 

@@ -1,18 +1,13 @@
 # -*- coding: utf-8 -*-
-# @Time    : 2024/11/19 18:06
 # @Author  : Karry Ren
+# @Time    : 2024/11/19 18:06
 
-""" The utils functions for tensor engineering. """
+""" The util functions for tensor engineering. """
 
-import sys
-import os
-import datetime
 from typing import Union, List
 import akshare as ak
 
 from Ops import Code, CodeType
-
-global_switch_hour = 18
 
 
 def gen_date_list(start: str, end: str) -> List[str]:

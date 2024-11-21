@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
-# @author : MaMing
-# @time   : 2024/02/28 10:25
-#
-# pylint: disable=no-member
+# @Author : Karry Ren
+# @Time   : 2024/02/28 10:25
 
 """ The interface of Tensor Construction Algorithm. """
 
