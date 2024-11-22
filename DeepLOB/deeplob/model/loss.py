@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
-# @author : RenKai (intern in HIGGS ASSET)
-# @time   : 2023/11/25 12:12
-#
-# pylint: disable=no-member
+# @Author : Karry Ren
+# @Time   : 2024/11/21 19:19
 
 """ The loss function of training DeepLOB. """
 
@@ -65,27 +63,12 @@ class MTL:
         return batch_loss
 
 
-class Huber:
-    """ Compute the Huber loss
-    :param delta: delta of nn.HuberLoss
-
-    """
-
-    def __init__(self, delta):
-        self.loss = nn.HuberLoss(delta=delta, reduction='none')
-
-    def __call__(self, y_pred: torch.Tensor, y_true: torch.Tensor, weight: torch.Tensor, **kwargs):
-        loss_tensor = self.loss(y_pred, y_true)
-        return torch.sum(weight * loss_tensor) / torch.sum(weight)
-
-
 def get_loss_instance(loss_dict: dict):
     """ Get the instance of loss for training DeepLOB.
 
     :param loss_dict : the loss config dict, format should be {loss_type: loss_params}
         Now only support 2 types of loss:
             - `MTL`: for multi-tick-MSE loss
-            - `Huber`: for Huber Loss
 
     """
 
@@ -93,7 +76,5 @@ def get_loss_instance(loss_dict: dict):
     for loss_type, loss_params in loss_dict.items():
         if loss_type == "MTL":
             return MTL(**loss_params)
-        elif loss_type == "Huber":
-            return Huber(**loss_params)
         else:
             raise ValueError(loss_type)

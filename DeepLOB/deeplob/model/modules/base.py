@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
-# @author : RenKai (intern in HIGGS ASSET)
-# @time   : 2024/4/8 12:54
-#
-# pylint: disable=no-member
+# @Author : Karry Ren
+# @Time   : 2024/11/21 19:19
 
 """ The Void nn.Module, `forward()` function will return None. """
 

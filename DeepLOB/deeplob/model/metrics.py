@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
-# @author : RenKai (intern in HIGGS ASSET)
-# @time   : 2023/11/27 10:05
-#
-# pylint: disable=no-member
+# @Author : Karry Ren
+# @Time   : 2024/11/21 19:19
 
 """The metrics of y and y_hat.
     - r2_score

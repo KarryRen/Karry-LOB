@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
-# @author : MaMing, RenKai (intern in HIGGS ASSET)
-# @time   : 4/23/24 1:05 PM
-#
-# pylint: disable=no-member
+# @Author : Karry Ren
+# @Time   : 2024/11/22 16:22
 
 """ The interface of normalization. """
 

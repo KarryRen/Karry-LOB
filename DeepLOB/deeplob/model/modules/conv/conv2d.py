@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
-# @author : MaMing, RenKai (intern in HIGGS ASSET)
-# @time   : 2023/11/30 9:08
-#
-# pylint: disable=no-member
+# @Author : Karry Ren
+# @Time   : 2024/11/21 19:19
 
 """ The `Conv2d` Modules of deep-lob net.
     - Conv2d_3Dim: The `Conv2d` Encoder for 3 dimension features.

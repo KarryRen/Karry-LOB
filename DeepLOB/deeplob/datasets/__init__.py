@@ -1,15 +1,13 @@
 # -*- coding: utf-8 -*-
-# @author : MaMing
-# @time   : 3/15/24 5:30 PM
-#
-# pylint: disable=no-member
+# @Author : Karry Ren
+# @Time   : 2024/11/22 16:22
 
-""" The interfaces of deeplob dataset. Total having 4 kinds ! """
+""" The interfaces of deeplob dataset. Now only support 1 code! """
 
 from typing import Union
 
-from .tick_sample import DeepLOBDataset, MultiCodesDeepLOB
-from .daily_sample import DeepLOBDataset_DailySample, MultiCodesDailySample
+from .tick_sample import TickSampleDataset
+from .daily_sample import DailySampleDataset
 from .collate import DailySampleCollate, TickSampleCollate
 
 
@@ -25,14 +23,9 @@ def get_class_of_dataset(class_type: str = None, codes: Union[list, str] = None)
 
     if isinstance(codes, str):  # for single code
         if class_type == "DeepLOBDataset_DailySample":
-            return DeepLOBDataset_DailySample
+            return DailySampleDataset
         else:
-            return DeepLOBDataset
-    elif isinstance(codes, list):  # for multi codes
-        if class_type == "DeepLOBDataset_DailySample":
-            return MultiCodesDailySample
-        else:
-            return MultiCodesDeepLOB
+            return TickSampleDataset
     else:
         raise TypeError(class_type)
 

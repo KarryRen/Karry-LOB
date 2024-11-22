@@ -27,9 +27,9 @@ from datetime import datetime
 import matplotlib.pyplot as plt
 from typing import Dict, Tuple, Union, List
 
-from DeepLOB.deeplob.datasets import get_class_of_dataset, get_class_of_collate
 from DeepLOB.deeplob.datadict.deeplob_datadict import DataDict
 from DeepLOB.deeplob.model import get_instance_of_net
+from DeepLOB.deeplob.datasets import get_class_of_dataset, get_class_of_collate
 from DeepLOB.deeplob.model.loss import get_loss_instance
 from DeepLOB.deeplob.model.metrics import r2_score, corr_score
 from DeepLOB.deeplob.utils import fix_random_seed, load_data_dict, analyze_running_bool
@@ -99,8 +99,8 @@ def init_model(
 
     # ---- Build up the net instance ---- #
     # Attention: during building the net instance, weight of net is set randomly
-    # so the `init_model_seed` is really important, you should set the seed dict carefully.
-    model = get_instance_of_net(device=device, class_type=None, codes=codes, **net_config)
+    # so the `init_model_seed` is really important, you should set the seed dict carefully !
+    model = get_instance_of_net(device=device, codes=codes, **net_config)
 
     # ---- Init the param of model ---- #
     if pretrain:  # load the state dict of pretrain model, if given the `pretrain_path`
@@ -133,7 +133,6 @@ def init_model(
                 raise NotImplementedError("do not know to apply valid beta")
         else:
             model.fc.weight.data *= model_config["valid_beta"]
-
     return model, pretrain_model_state_dict
 
 
@@ -153,7 +152,7 @@ def init_optimizer(
     # ---- Freeze the params ---- #
     freeze_patterns = config.OPTIM_PARAMS.get("freeze")  # get the freeze config
     assert isinstance(freeze_patterns, list), "The `freeze` in config must be a list !"
-    if freeze_patterns:  # You can't freeze all params !
+    if freeze_patterns:  # you can't freeze all params !
         for param_name, param in model.named_parameters():
             if isin_patterns(param_name, freeze_patterns):
                 if param_name in pretrain_model_state_dict.keys():
@@ -162,13 +161,6 @@ def init_optimizer(
                     # freeze the param
                     param.requires_grad = False
                     logging.info(f"-- Freeze param `{param_name}` in model ! --")
-
-    # ---- Freeze the mean&var in BN ---- #
-    for pretrain_model_param_key in pretrain_model_state_dict.keys():
-        if "norm_dict.BN_" in pretrain_model_param_key:
-            feature_key = pretrain_model_param_key.split(".")[1]
-            model.norm_dict[feature_key].model.bn.momentum = 0
-            logging.info(f"-- Freeze bn running mean&var of `{pretrain_model_param_key}` in model ! --")
 
     # ---- Check whether all params are freezing ---- #
     no_freeze_param_list = list(filter(lambda p: p.requires_grad, model.parameters()))
@@ -218,7 +210,7 @@ def init_train_valid_dataloader(
     logging.info(f"||| paf_shift_k = {config.PAF_SHIFT_K} |||")
 
     # ---- Build up the Train dataset and loader (Might have two types) ---- #
-    train_dataset_class = get_class_of_dataset(class_type=config.TRAIN_DATASET_TYPE, codes=config.FUTURES)
+    train_dataset_class = get_class_of_dataset(class_type=config.TRAIN_DATASET_TYPE, codes=config.FUTURE_TYPE)
     train_collate_fn = get_class_of_collate(class_type=config.TRAIN_DATASET_TYPE)(device=device)
     logging.info(f"**** TRAIN FROM {config.TRAIN_DATES[0]} TO {config.TRAIN_DATES[-1]} ! ****")
     logging.info(f"||| train dataset type = {config.TRAIN_DATASET_TYPE} |||")
@@ -254,7 +246,7 @@ def init_train_valid_dataloader(
 
     # ---- Build up the Valid dataset and loader (Might have two types) ---- #
     logging.info(f"**** VALID FROM {config.VALID_DATES[0]} TO {config.VALID_DATES[-1]} ! ****")
-    valid_dataset_class = get_class_of_dataset(codes=config.FUTURES)
+    valid_dataset_class = get_class_of_dataset(codes=config.FUTURE_TYPE)
     valid_collate_fn = get_class_of_collate()(device=device)
     valid_dataset = valid_dataset_class(
         data_root_dict=data_dict,
@@ -302,8 +294,8 @@ def train_valid_model(
     # init the metric dict (will note `epochs+1` number metrics)
     df_metric = {}
     train_needed_metrics = ["loss", "global_r2", "global_corr"]
-    valid_needed_metrics = ["loss", "global_r2", "global_corr", "daily_mid_r2", "beta", "rescaled_global_r2", "rescaled_daily_mean_r2",
-                            "rescaled_global_corr"]
+    valid_needed_metrics = ["loss", "global_r2", "global_corr", "daily_mid_r2", "beta",
+                            "rescaled_global_r2", "rescaled_daily_mean_r2", "rescaled_global_corr"]
     for needed_metric in train_needed_metrics:
         df_metric[f"train_{needed_metric}"] = np.zeros(config.EPOCHS + 1)
     for needed_metric in valid_needed_metrics:
@@ -311,7 +303,7 @@ def train_valid_model(
 
     # ---- Valid the initial model ---- #
     valid_loss_one_epoch, valid_preds_one_epoch, valid_labels_one_epoch, valid_weights_one_epoch = valid_model_one_epoch(
-        config=config, model=model, valid_loader=valid_loader, criterion=criterion
+        model=model, valid_loader=valid_loader, criterion=criterion
     )
     summary_model_result_one_epoch(
         df_metric=df_metric, epoch=0, config=config,
@@ -344,7 +336,7 @@ def train_valid_model(
         )
         # valid model for one epoch
         valid_loss_one_epoch, valid_preds_one_epoch, valid_labels_one_epoch, valid_weights_one_epoch = valid_model_one_epoch(
-            config=config, model=model, valid_loader=valid_loader, criterion=criterion
+            model=model, valid_loader=valid_loader, criterion=criterion
         )
         summary_model_result_one_epoch(
             df_metric=df_metric, epoch=epoch, config=config,
@@ -361,7 +353,7 @@ def train_valid_model(
 
     # ---- Summary the train & valid result ---- #
     # save the metric dict to csv
-    pd.DataFrame(df_metric).to_csv(config.MODEL_SAVE_PATH + "model_pytorch_metric.csv")
+    pd.DataFrame(df_metric).to_csv(f"{config.MODEL_SAVE_PATH}/model_pytorch_metric.csv")
     # draw figure of train and valid metrics
     plt.figure(figsize=(15, 6))
     plt.subplot(3, 1, 1)
@@ -376,7 +368,7 @@ def train_valid_model(
     for k, key in enumerate(plt_r2):
         plt.plot(df_metric[key], label=key, color=color[k], linestyle="--")
     plt.legend()
-    plt.savefig(config.SAVE_PATH + "training_steps.png", dpi=200, bbox_inches="tight")
+    plt.savefig(f"{config.SAVE_PATH}/training_steps.png", dpi=200, bbox_inches="tight")
     logging.info("***************** TRAINING OVER ! *****************")
 
 
@@ -410,10 +402,7 @@ def train_model_one_epoch(
         real_sample_num = len(train_loader.dataset) * config.TICK_NUM_IN_ONE_SAMPLE * len(config.TRAIN_DATES)
     else:
         real_sample_num = len(train_loader.dataset)
-    if isinstance(config.FUTURES, list):
-        train_preds_one_epoch = torch.zeros(real_sample_num, len(config.FUTURES)).to(device=device)
-    else:
-        train_preds_one_epoch = torch.zeros(real_sample_num).to(device=device)
+    train_preds_one_epoch = torch.zeros(real_sample_num).to(device=device)
     train_labels_one_epoch = torch.zeros_like(train_preds_one_epoch)
     train_weights_one_epoch = torch.zeros_like(train_preds_one_epoch)
 
@@ -426,7 +415,7 @@ def train_model_one_epoch(
         lob_labels, lob_weights = batch_label["label"], batch_label["weight"]
         # zero_grad, forward, compute loss, backward and optimize
         optimizer.zero_grad()
-        outputs = model(lob_features, batch_label)["label"]
+        outputs = model(lob_features)["label"]
         loss = criterion(outputs, lob_labels, lob_weights)
         loss.backward()
         optimizer.step()
@@ -442,14 +431,12 @@ def train_model_one_epoch(
 
 
 def valid_model_one_epoch(
-        config,
         model: torch.nn.Module,
         valid_loader: data.dataloader,
         criterion,
 ) -> Tuple[list, torch.Tensor, torch.Tensor, torch.Tensor]:
     """ Valid the model for one epoch.
 
-    :param config: the config file
     :param model: the model to be trained
     :param valid_loader: the dataloader for valid model
     :param criterion: the loss instance
@@ -465,10 +452,7 @@ def valid_model_one_epoch(
     # ---- Step 1. Do some preparation for valid model ---- #
     device = model.device  # get the computing device
     valid_loss_one_epoch = []  # set the empty loss list
-    if isinstance(config.FUTURES, list):
-        valid_preds_one_epoch = torch.zeros(len(valid_loader.dataset), len(config.FUTURES)).to(device=device)
-    else:
-        valid_preds_one_epoch = torch.zeros(len(valid_loader.dataset)).to(device=device)
+    valid_preds_one_epoch = torch.zeros(len(valid_loader.dataset)).to(device=device)
     valid_labels_one_epoch = torch.zeros_like(valid_preds_one_epoch)
     valid_weights_one_epoch = torch.zeros_like(valid_preds_one_epoch)
 
@@ -592,12 +576,13 @@ def save_model_one_epoch(
 
     """
 
-    torch.save(model.state_dict(), root_path + f"model_statedict_epoch_{epoch}.pkl")
+    torch.save(model.state_dict(), f"{root_path}/model_statedict_epoch_{epoch}.pkl")
 
 
 def test_model(model, data_root_dict, config):
     """
     test. no seed.
+     #:TODO Using xarray to replace
     """
 
     logging.info(f"***************** BEGIN MAKE DATASET ! *****************")
@@ -605,7 +590,7 @@ def test_model(model, data_root_dict, config):
 
     # ---- Load test data, then make dataset following by dataloader ---- #
     logging.info(f"**** TEST FROM {config.TEST_DATES[0]} TO {config.TEST_DATES[-1]} ! ****")
-    test_dataset_class = get_class_of_dataset(codes=config.FUTURES)
+    test_dataset_class = get_class_of_dataset(codes=config.FUTURE_TYPE)
     test_collate_fn = get_class_of_collate()(device=device)
     test_dataset = test_dataset_class(
         data_root_dict=data_root_dict,
@@ -620,22 +605,8 @@ def test_model(model, data_root_dict, config):
     logging.info("***************** LOAD DATA OVER ! *****************")
     logging.info(f"Test dataset: length = {len(test_dataset)}")
 
-    # ---- Init Feature for saving predict ---- #
-    feature_dict = {
-        "codes": config.FUTURES if isinstance(config.FUTURES, list) else [config.FUTURES],
-        "dates": config.TEST_DATES,
-        "timestamps": boomdata.util.generate_ts("[('09:30:00', '11:30:00'], ('13:00:00', '15:00:00']]", "500ms"),
-        "features": ["Weight", "Label", "Pred"],
-        "ftype": 'numpy.array(code, date, timestamp, feature)',
-        "data": np.nan
-    }
-    fea_label_pred = boomdata.Feature(**feature_dict)
-
     # ---- Test model ---- #
-    if isinstance(config.FUTURES, list):
-        lob_labels_array = torch.zeros(len(test_dataset), len(config.FUTURES)).to(device=device)
-    else:
-        lob_labels_array = torch.zeros(len(test_dataset)).to(device=device)
+    lob_labels_array = torch.zeros(len(test_dataset)).to(device=device)
     predictions_array = torch.zeros_like(lob_labels_array)
     weight_array = torch.zeros_like(lob_labels_array)
     last_step = 0
@@ -675,20 +646,6 @@ def test_model(model, data_root_dict, config):
                  f"{corr_score(y_true=lob_labels_array_daily, y_pred=predictions_array_daily, weight=weight_array_daily, mode='daily_mid', tick_num=config.TICK_NUM)} "
                  f"**********")
     logging.info("***************** TEST OVER ! *****************")
-    logging.info("")
-    # cat
-    if len(weight_array_global.shape) == 1:
-        concat_array = np.concatenate((weight_array_global[:, None], lob_labels_array_global[:, None], predictions_array_global[:, None]), axis=1)
-    else:
-        concat_array = np.concatenate((np.expand_dims(weight_array_global.T, -1), np.expand_dims(lob_labels_array_global.T, -1),
-                                       np.expand_dims(predictions_array_global.T, -1)), axis=-1)
-    fea_label_pred.data[:] = concat_array.reshape(*fea_label_pred.shape)
-
-    # set zero
-    fea_label_pred.data[:, :, :config.START_TICK, 2] = 0.0
-    fea_label_pred.data[:, :, config.END_TICK:, 2] = 0.0
-    # save
-    save_feature_as_h5(fea_label_pred, config.SAVE_PATH + "label_pred.h5")
 
 
 def run(config) -> None:
@@ -718,21 +675,23 @@ def run(config) -> None:
     # ---- Train & Valid model ---- #
     if running_bool["Train"]:
         model, pretrain_model_state_dict = init_model(
-            device=device, codes=config.FUTURES, net_config=config.NET, seed_dict=config.SEED_DICT, pretrain=config.NET.get("pretrain")
+            device=device, codes=config.FUTURE_TYPE, net_config=config.NET,
+            seed_dict=config.SEED_DICT, pretrain=config.NET.get("pretrain")
         )
         optimizer = init_optimizer(config=config, model=model, pretrain_model_state_dict=pretrain_model_state_dict)
-        train_valid_data_loader_dict = init_train_valid_dataloader(device=model.device, config=config, seed_dict=config.SEED_DICT,
-                                                                   data_dict=data_dict)
+        train_valid_data_loader_dict = init_train_valid_dataloader(
+            device=model.device, config=config, seed_dict=config.SEED_DICT, data_dict=data_dict
+        )
         train_valid_model(
             config=config, seed_dict=config.SEED_DICT, model=model, optimizer=optimizer, data_loader_dict=train_valid_data_loader_dict
         )
 
-    # ---- Step 4. Test model ---- #
+    # ---- Test model ---- #
     if running_bool["Test"]:
         best_path = get_best_state_dict_path(config.MODEL_SAVE_PATH, config.MAIN_METRIC)
         logging.info(f"***************** LOAD Best Model {best_path} *****************")
         model, _ = init_model(
-            device=device, codes=config.FUTURES, net_config=config.NET, seed_dict={}, pretrain={"path": best_path},
+            device=device, codes=config.FUTURE_TYPE, net_config=config.NET, seed_dict={}, pretrain={"path": best_path},
             use_valid_beta=config.DICT.get("use_valid_beta", False)
         )
         test_model(model=model, data_root_dict=data_dict, config=config)

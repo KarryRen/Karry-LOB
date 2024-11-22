@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
-# @author : RenKai (intern in HIGGS ASSET)
-# @time   : 4/23/24 1:12 PM
-#
-# pylint: disable=no-member
+# @Author : Karry Ren
+# @Time   : 2024/11/21 19:19
 
 """ The bn norm class. We call these classes as bn_norm because we want to separate them from the BN in torch.nn.
     - SF_BatchNorm: for `(S, F)` type features

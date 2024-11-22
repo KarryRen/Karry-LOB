@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
-# @author : MaMing, RenKai (intern in HIGGS ASSET)
-# @time   : 4/24/24 10:05 AM
-#
-# pylint: disable=no-member
+# @Author : Karry Ren
+# @Time   : 2024/11/21 19:19
 
 """ The interfaces of `Conv2d`. """
 

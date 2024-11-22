@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
-# @author : RenKai (intern in HIGGS ASSET)
-# @time   : 6/2/24 10:47 AM
-#
-# pylint: disable=no-member
+# @Author : Karry Ren
+# @Time   : 2024/11/21 19:19
 
 """ The diy conv layers, just one layer rather than a module !!
 

@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
-# @author : MaMing
-# @time   : 4/8/24 5:30 PM
-#
-# pylint: disable=no-member
+# @Author : Karry Ren
+# @Time   : 2024/11/21 19:19
 
 """ The base class of deeplob dataset. """
 
@@ -209,7 +207,7 @@ class DailySampleBase(SampleBase):
 
     def __init__(self, **kwargs) -> None:
         """ 
-        Parameters of sub class
+        Parameters of subclass
             :param tick_num_in_one_sample: tick_num_in_one_sample
 
         """

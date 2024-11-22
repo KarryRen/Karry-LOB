@@ -111,12 +111,12 @@ Label 其本质也可以看作一个 Feature。基于 `base.base_hftlabel` 获�
 
 - **Way 1.**  (`rolling().mean()`)
   $$
-  \text{Label} = \log(\frac{\frac{1}{k}\sum_{i=0}^k\text{MidPrice}_{t+i})}{\text{MidPrice}_{t}}) * 10000
+  \text{Label} = \log(\frac{\frac{1}{k}\sum_{i=0}^k\text{MidPrice}_{t+i})}{\text{MidPrice}_{t}})
   $$
 
 - **Way 3.** 
   $$
-  \text{Label} = \log(\frac{\text{MidPrice}_{t+k}}{\text{MidPrice}_{t}}) * 10000
+  \text{Label} = \log(\frac{\text{MidPrice}_{t+k}}{\text{MidPrice}_{t}})
   $$
 
 Way1. 相比于 Way 3. 波动更小，但是在实际使用中我们一般会使用 Way 3.
@@ -143,7 +143,16 @@ Label 的计算存在一定的细节，尤其是 Label Weight 的获取。在后
 
 - 从 `shell` 脚本出发，通过 `task_id` 来控制 Train，Valid 以及 Test 的日期区间，以及一些诸如随机种子的配置
 - 在以下三组文件的综合作用下完成 `config` 的生成：`task_util.py`，`task_config.yaml`，`configs/`
-- 使用 `datadict` 对原始数据做 `dict ` 管理
+- 使用 `datadict` 对原始数据做 `dict ` 管理，将其载入内存，同时进行数据检验和一些数据变化
+- 使用可以进行 Freeze 和 Pretrain 的思路进行模型初始化
+- 模型训练和测试做拆分和融合
+- 最后做统一的 eval
+
+
+
+
+
+
 
 
 

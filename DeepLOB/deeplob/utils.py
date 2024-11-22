@@ -18,8 +18,8 @@ from DeepLOB.deeplob.datadict.deeplob_datadict import gen_data_dict_config, gen_
 
 
 def fix_random_seed(seed: int) -> None:
-    """ Fix the random seed to decrease the random of training.
-    Ensure the reproducibility of the experiment.
+    """ Fix the random seed to decrease the random of training,
+    ensuring the reproducibility of the experiment.
 
     :param seed: the random seed number
 
@@ -137,7 +137,7 @@ def get_best_state_dict_path(model_save_path: str, metric: str) -> str:
 
 
 def isin_patterns(name: str, patterns: List[str]) -> bool:
-    """ Check whether name in patterns. """
+    """ Check whether param with name in patterns or not. """
 
     bool_isin = False
     for pattern in patterns:

@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
-# @author : Maming, RenKai (intern in HIGGS ASSET)
-# @time   : 2024/03/30 9:08
-#
-# pylint: disable=no-member
+# @Author : Karry Ren
+# @Time   : 2024/11/21 19:19
 
 """ The norm class that returns None during forward (the reason why we call this file `void_norm.py`):
     - PriceVolumeNorm: Price, Volume(logged) normalization of (bs, init_channels, time_steps, 2 directions, 5 levels) data
@@ -69,8 +67,10 @@ class PriceVolumeNorm(VoidModule):
             norm_tensor[..., 1] = torch.log(norm_tensor[..., 1] + 1)
             # compute the mean and std of the first tensor of (S, L, D) dims
             if is_first_name:
-                mean = norm_tensor[:, :, -self.mean_std_time_steps:, :, :, :].mean(dim=(2, 3, 4), keepdim=True).detach()  # shape = (bs, 1, 1, 1, 1, f)
-                std = norm_tensor[:, :, -self.mean_std_time_steps:, :, :, :].std(dim=(2, 3, 4), keepdim=True).detach() + 1e-5  # shape = (bs, 1, 1, 1, 1, f)
+                # shape = (bs, 1, 1, 1, 1, f)
+                mean = norm_tensor[:, :, -self.mean_std_time_steps:, :, :, :].mean(dim=(2, 3, 4), keepdim=True).detach()
+                # shape = (bs, 1, 1, 1, 1, f)
+                std = norm_tensor[:, :, -self.mean_std_time_steps:, :, :, :].std(dim=(2, 3, 4), keepdim=True).detach() + 1e-5
                 is_first_name = False  # only compute the mean&std of the first feature
             # do the z-score norm (just P&V)
             norm_tensor[..., :2] = (norm_tensor[..., :2] - mean[..., :2]) / std[..., :2]
@@ -133,7 +133,8 @@ class PriceVolumeMeanNorm(VoidModule):
             norm_tensor[..., 1] = torch.log(norm_tensor[..., 1] + 1)
             # compute the mean and std of the first tensor of (S, L, D) dims
             if is_first_name:
-                mean = norm_tensor[:, :, -self.mean_std_time_steps:, :, :, :].mean(dim=(2, 3, 4), keepdim=True).detach() + 1e-5  # shape = (bs, 1, 1, 1, 1, f)
+                mean = norm_tensor[:, :, -self.mean_std_time_steps:, :, :, :].mean(dim=(2, 3, 4),
+                                                                                   keepdim=True).detach() + 1e-5  # shape = (bs, 1, 1, 1, 1, f)
                 is_first_name = False  # only compute the mean&std of the first feature
             # do the PVM norm operation
             norm_tensor[..., :2] = norm_tensor[..., :2] / mean[..., :2]
