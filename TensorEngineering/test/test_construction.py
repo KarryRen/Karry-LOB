@@ -10,7 +10,7 @@ from TensorEngineering.tensor_engineering.tensor_construction_algo.base import H
 
 # ---- Define some `special` params for feature construction ---- #
 code = Code("IF_M0", code_type="FINANCIAL_FUTURE")
-date = "20220104"
+date = "20220411"
 
 # ---- Define the CLASS of feature construction algorithm ---- #
 algo = HFTLabel()

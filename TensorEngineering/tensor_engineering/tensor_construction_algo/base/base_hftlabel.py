@@ -24,7 +24,7 @@ class HFTLabel(ConstructionAlgoBase):
         self.label_step = int(10)
 
         # ---- Define the special params for HFTLabel ---- #
-        version = (2024, 11, 20, 14, 51)  # use date to note version
+        version = (2024, 11, 22, 15, 6)  # use date to note version
         out_coords = {
             "T": list(range(28800)),
             "F": [
@@ -88,6 +88,6 @@ class HFTLabel(ConstructionAlgoBase):
                 self.xray.loc[:, label_weight_name].data[:] = array_label_weight
                 # set the label
                 label_name = f"label_ret_{self.label_step}_{label_way}"
-                array_label[both_price_valid_index] = np.log(array_future_price[both_price_valid_index] / array_price[both_price_valid_index]) * 10000
+                array_label[both_price_valid_index] = np.log(array_future_price[both_price_valid_index] / array_price[both_price_valid_index])
                 self.xray.loc[:, label_name].data[:] = array_label
         return self.xray

@@ -13,7 +13,7 @@ export PYTHONPATH=$(pwd):$PYTHONPATH
 export start_date="20220101"
 export end_date="20230101"
 export mode="a" # different modes will have different operation
-export n_process=1 # if == 1, for debug
+export n_process=2 # if == 1, for debug
 
 # ---- Prepare the tensor groups and code types to do the construction ---- #
 #tensor_group_list=("$USER") # the list of tensor group

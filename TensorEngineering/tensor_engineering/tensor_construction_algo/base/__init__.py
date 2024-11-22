@@ -5,7 +5,7 @@
 """ The interface of Base Tensor Construction Algorithm. """
 
 # ---- LOB Algorithm ---- #
-from .base_lob import LOB
+# from .base_lob import LOB
 
 # ---- Label Algorithm ---- #
 from .base_hftlabel import HFTLabel
