@@ -488,13 +488,13 @@ def group_data_dict(data_dict: DataDict, group_config: Dict[str, List[str]], dat
         - `numpy` for np.ndarray data output
         - `xarray` for xr.DataArray data output
 
-    return:
+    :return:
         - the grouped_data_dict, a dict of grouped data, format should be:
             {
-                "date_0":{group_name_1: array_0, group_name_2: array_2, ... ,},
-                "date_1":{group_name_1: array_0, group_name_2: array_2, ... ,},
+                "date_0":{group_name_1: array_1, group_name_2: array_2, ... ,},
+                "date_1":{group_name_1: array_1, group_name_2: array_2, ... ,},
                 ...,
-                "date_n":{group_name_1: array_0, group_name_2: array_2, ... ,}
+                "date_n":{group_name_1: array_1, group_name_2: array_2, ... ,}
             }
 
     """
@@ -513,5 +513,5 @@ def group_data_dict(data_dict: DataDict, group_config: Dict[str, List[str]], dat
             elif data_type == "xarray":
                 grouped_data_dict[date][group_name] = xr.concat(grouped_array, dim="F")
             else:
-                ValueError(data_type)
+                raise ValueError(data_type)
     return grouped_data_dict

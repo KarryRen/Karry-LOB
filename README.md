@@ -139,7 +139,13 @@ Label 的计算存在一定的细节，尤其是 Label Weight 的获取。在后
 
 ### 2.1 Code Idea
 
-此部分的编码思路较为直接，完全采用标准的 pytorch 框架进行搭建。仍然是采用 `shell` 脚本作为程序入口，使用 `.py` 文件进行串联。首先从 `shell` 脚本出发，通过 `task_id` 来控制 Train，Valid 以及 Test 的日期区间，以及一些诸如随机种子的配置，在以下三组文件的综合作用下完成 `config` 的生成：`task_util.py`，`task_config.yaml`，`configs/`。
+此部分的编码思路较为直接，完全采用标准的 pytorch 框架进行搭建。仍然是采用 `shell` 脚本作为程序入口，使用 `.py` 文件进行串联。
+
+- 从 `shell` 脚本出发，通过 `task_id` 来控制 Train，Valid 以及 Test 的日期区间，以及一些诸如随机种子的配置
+- 在以下三组文件的综合作用下完成 `config` 的生成：`task_util.py`，`task_config.yaml`，`configs/`
+- 使用 `datadict` 对原始数据做 `dict ` 管理
+
+
 
 
 

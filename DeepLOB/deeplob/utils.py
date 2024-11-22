@@ -94,6 +94,8 @@ def load_data_dict(
     :param verbose: a boolean flag indicating whether to enable verbose output.
     :param data_type: numpy or xarray
 
+    :return: the grouped data dict, detail can be found in datadict.
+
     """
 
     # ---- Step 1. Generate the config for data dict ---- #

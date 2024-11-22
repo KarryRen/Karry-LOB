@@ -11,7 +11,7 @@ This is the baseline.
 
 """
 
-import os
+import torch
 from typing import Dict, Union, List
 
 from DeepLOB.task_util import environ_config
@@ -114,8 +114,11 @@ class Config:
         # ---- Init the redo ---- #
         self.REDO = environ_config["redo"]  # control whether to need train or test
 
+        # ---- Init the device ---- #
+        self.DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
+
         # ---- Init the params about the dataset ---- #
-        self.DATA_ROOT_DICT = {"/Users/karry/KarryRen/Fintech/Quant/Projects/Data/Karry-LOB": "TensorEngineering"}
+        self.DATA_ROOT_DICT = {"/Users/karry/KarryRen/Fintech/Quant/Projects/Data/Karry-LOB/TensorEngineering": "TensorEngineering"}
         self.FUTURE_TYPE = environ_config["future_type"]
         # dates
         self.TRAIN_DATES = environ_config["train_dates"]

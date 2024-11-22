@@ -712,7 +712,7 @@ def run(config) -> None:
         needed_data.update(config.NEEDED_LABELS)  # set the labels config
         data_dict = load_data_dict(
             dates=config.TRAIN_DATES + config.VALID_DATES + config.TEST_DATES,
-            codes=config.FUTURES, needed_data=needed_data, data_root_path_dict=config.DATA_ROOT_DICT
+            codes=config.FUTURE_TYPE, needed_data=needed_data, data_root_path_dict=config.DATA_ROOT_DICT
         )
 
     # ---- Train & Valid model ---- #
