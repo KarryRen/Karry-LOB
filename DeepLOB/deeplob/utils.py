@@ -56,12 +56,12 @@ def analyze_running_bool(config, redo: bool, checkpoints: List[str]) -> Dict[str
     else:  # not redo, then set the running_bool based on the situation
         # whether Train, based on having the last epoch trained model or not
         model_path = config.MODEL_SAVE_PATH + f"model_statedict_epoch_{config.EPOCHS - 1}.pkl"
-        running_bool["Train"] = (not os.path.exists(model_path))
+        running_bool["Train"] = not os.path.exists(model_path)
         # whether Test, based on having the label prediction result or not
         if not running_bool["Train"]:  # if Train then must Test, if not Train should consider
             bool_test = False
             for file in checkpoints:  # check all files in checkpoints, if 1 not existed, then need test
-                file_full_path = config.SAVE_PATH + file
+                file_full_path = f"{config.SAVE_PATH}/{file}"
                 if os.path.exists(file_full_path):
                     if file in ["valid_label_pred.h5", "test_label_pred.h5"]:
                         feature_dict = {"dates": None}

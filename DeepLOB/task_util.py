@@ -97,8 +97,10 @@ environ_config = {
     "train_valid_num": int(5),  # the num of train & valid month
     "valid_date_num": int(20),  # the num of valid dates
     "future_type": "str",  # the types of future
-    "seed_train": int(913),  # the rand seed for train
-    "seed_model": None,  # the rand seed for model
+    "seed_model": int(0),  # the rand seed for model
+    "seed_dataloader": int(0),  # the rand seed for dataloader
+    "seed_train": int(0),  # the rand seed for train
+
 }
 
 # ---- Get the os environs and set them to environ_config ---- #

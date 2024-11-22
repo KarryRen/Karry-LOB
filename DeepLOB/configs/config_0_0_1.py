@@ -232,11 +232,9 @@ class Config:
     def dynamic_init(self):
         """ Dynamic init some params. """
 
-        self.SAVE_PATH = (
-            f"save/{self.job_name}/{self.FUTURE_TYPE}/model_date_{self.VALID_DATES[-1]}/rs_{self.SEED_STR}/"
-        )
-        self.LOG_FILE = self.SAVE_PATH + "deeplob_log.log"
-        self.MODEL_SAVE_PATH = self.SAVE_PATH + "trained_models/"
+        self.SAVE_PATH = f"save/{self.job_name}/{self.FUTURE_TYPE}/model_date_{self.TEST_DATES[0]}/rs_{self.SEED_STR}"
+        self.LOG_FILE = f"{self.SAVE_PATH}/deeplob_log.log"
+        self.MODEL_SAVE_PATH = f"{self.SAVE_PATH}/trained_models/"
         self.TOTAL_CHANNEL, self.FUSION_INDEX_LIST = cal_total_channel(self.FEATURE_ENCODER_PARAMS, self.FUSION_WAY_LIST)
 
         # ---- Build the sequence feature encoder ---- #

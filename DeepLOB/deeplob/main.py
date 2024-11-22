@@ -25,18 +25,17 @@ import pandas as pd
 from tqdm import tqdm
 from datetime import datetime
 import matplotlib.pyplot as plt
-import boomdata
 from typing import Dict, Tuple, Union, List
 
-from .datasets import get_class_of_dataset, get_class_of_collate
-from .datadict.deeplob_datadict import DataDict
-from .model import get_instance_of_net
-from .model.loss import get_loss_instance
-from .model.metrics import r2_score, corr_score
-from .utils import fix_random_seed, load_data_dict, analyze_running_bool
-from .utils import get_best_state_dict_path, save_feature_as_h5
-from .utils import isin_patterns
-from .utils import load_patterns_state_dict
+from DeepLOB.deeplob.datasets import get_class_of_dataset, get_class_of_collate
+from DeepLOB.deeplob.datadict.deeplob_datadict import DataDict
+from DeepLOB.deeplob.model import get_instance_of_net
+from DeepLOB.deeplob.model.loss import get_loss_instance
+from DeepLOB.deeplob.model.metrics import r2_score, corr_score
+from DeepLOB.deeplob.utils import fix_random_seed, load_data_dict, analyze_running_bool
+from DeepLOB.deeplob.utils import get_best_state_dict_path
+from DeepLOB.deeplob.utils import isin_patterns
+from DeepLOB.deeplob.utils import load_patterns_state_dict
 
 
 def create_dirs_log(config) -> None:
